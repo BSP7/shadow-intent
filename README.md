@@ -2,6 +2,16 @@
 
 Shadow Intent is a real-time monitoring and analysis system designed to detect suspicious activities and malicious "intents" in IoT (Internet of Things) devices. The system sniffs network traffic, extracts behavioral features, calculates intent scores using machine learning techniques, and provides an interactive dashboard to view device risks and alerts.
 
+## Current Progress & Status
+
+* **Backend API**: Implemented FastAPI backend with MongoDB integration. Added endpoints for metrics, history, and actions.
+* **Traffic Monitoring**: Scapy-based network sniffer is operational for capturing network traffic. Improved Device Identification with OUI Vendor checks.
+* **Analysis & ML**: Implemented persistent behavior learning and an **Isolation Forest ML Model** (`scikit-learn`) for dynamic anomaly detection.
+* **Explainable AI (XAI)**: Upgraded Alert Engine to provide descriptive reasoning and confidence scores for malicious activity.
+* **Simulated Defense**: Added a mock response engine to log "Block/Drop" mitigations against hostile actors automatically.
+* **Frontend UI**: React-based interactive dashboard is built and visualizing threat data in real-time.
+* **Evaluation Metrics**: Added real-time tracking for True Positives, Recall, and Accuracy during attack simulations.
+
 ## Project Structure
 
 The project is split into two main components:
@@ -12,22 +22,30 @@ The project is split into two main components:
 ### Directory Layout
 
 ```text
-shadow-intent/
-├── backend/                  # Python FastAPI Backend
-│   ├── app.py                # Main FastAPI application
-│   ├── real_sniffer.py       # Scapy network traffic sniffer
-│   ├── feature_extractor.py  # Traffic feature extraction (Scapy/Pandas)
-│   ├── intent_engine.py      # ML heuristics and intent calculations
-│   ├── models.py             # Data models/schemas (Pydantic)
-│   ├── database.py           # MongoDB integration logic
-│   ├── alert_engine.py       # Alerting and threat notification rules
-│   ├── cli_monitor.py        # CLI tool for monitoring the system
-│   └── requirements.txt      # Python dependencies
-├── frontend/                 # React Dashboard Frontend
-│   ├── src/                  # React source files
-│   ├── public/               # Static assets
-│   └── package.json          # Node dependencies and scripts
-└── monitor.py                # Simple root fallback monitor script
+📦 shadow-intent
+ ┣ 📜 docker-compose.yml        # Docker composition for easy deployment
+ ┣ 📜 monitor.py                # Simple root fallback monitor script
+ ┣ 📜 simulate.py               # Traffic simulation script
+ ┣ 📂 backend                   # Python FastAPI Backend
+ ┃ ┣ 📜 app.py                  # Main FastAPI application
+ ┃ ┣ 📜 real_sniffer.py         # Scapy network traffic sniffer
+ ┃ ┣ 📜 feature_extractor.py    # Traffic feature extraction (Scapy/Pandas)
+ ┃ ┣ 📜 intent_engine.py        # ML heuristics and intent calculations
+ ┃ ┣ 📜 baseline_model.py       # Baseline behavior model
+ ┃ ┣ 📜 models.py               # Data models/schemas (Pydantic)
+ ┃ ┣ 📜 database.py             # MongoDB integration logic
+ ┃ ┣ 📜 alert_engine.py         # Alerting and threat notification rules
+ ┃ ┣ 📜 attack_simulator.py     # Simulates malicious network attacks
+ ┃ ┣ 📜 device_identifier.py    # Identifies IoT devices
+ ┃ ┣ 📜 cli_monitor.py          # CLI tool for monitoring the system
+ ┃ ┣ 📜 response_engine.py      # Automated response simulator
+ ┃ ┣ 📜 evaluation.py           # ML Model evaluation metrics
+ ┃ ┣ 📜 Dockerfile              # Backend container configuration
+ ┃ ┗ 📜 requirements.txt        # Python dependencies
+ ┗ 📂 frontend                  # React Dashboard Frontend
+   ┣ 📂 src                     # React source files
+   ┣ 📂 public                  # Static assets
+   ┗ 📜 package.json            # Node dependencies and scripts
 ```
 
 ## Getting Started
@@ -68,6 +86,15 @@ In a separate terminal (with the virtual environment activated), run the network
 python real_sniffer.py
 ```
 
+### 1.1 Running with Docker
+
+Alternatively, you can run the application using Docker Compose:
+
+```bash
+docker-compose up --build
+```
+This will automatically build and start the backend, frontend, and any required databases.
+
 ### 2. Setting up the Frontend
 
 Navigate to the `frontend/` directory and install the Node modules:
@@ -83,6 +110,18 @@ Start the React development server:
 npm start
 ```
 *The web dashboard should automatically open in your default browser at `http://localhost:3000`.*
+
+---
+
+## How it Works / Usage
+
+Once the backend, frontend, and sniffer are running, the system passively monitors your network.
+
+1. **Traffic Capture**: `real_sniffer.py` captures raw packets and sends them to the analysis engine.
+2. **Analysis**: `feature_extractor.py` and `intent_engine.py` evaluate the traffic against the `baseline_model.py` to calculate risk/intent scores.
+3. **Dashboard Monitoring**: Open the React Dashboard (`http://localhost:3000`) to view connected devices and their corresponding intent scores.
+4. **Threat Simulation**: You can use `backend/attack_simulator.py` or the root `simulate.py` to generate synthetic malicious traffic on your network and observe how the system detects and flags it.
+5. **CLI Monitoring**: For a terminal-based view of the system's status and alerts, run `backend/cli_monitor.py`.
 
 ---
 
